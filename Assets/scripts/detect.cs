@@ -4,69 +4,43 @@ using UnityEngine;
 using UnityEngine.Assertions;
 public class detect : MonoBehaviour
 {
-
+    public float radius;
     public Camera _camera;
     public Transform Cude;
     int i=0;
     
     private void Start()
     {
-        float width = 640;
-        float height = 480;
-        float fx, fy, cx, cy;
-        fx = 572.4114f;
-        fy = 573.57043f;
-        cx = 325.2611f;
-        cy = 242.04899f;
-        Matrix4x4 m = PerspectiveOffCenter(fx,fy,cx,cy,width,height);
+        
         StartCoroutine("moveToCam");
         
     }
-    static Matrix4x4 PerspectiveOffCenter(float fx,float fy,float cx,float cy,float width,float height)
+    public Vector3 RandomPointOnSphere()
     {
-        
-        float x = 2.0F * fx / (width);
-        float y = 2.0F * fy / (height);
-        float a = 0;
-        float b = 0;
-        float c = -(10000 + 10) / (1000 - 10);
-        float d = -(2.0F * 10000 * 10) / (10000 - 10);
-        float e = -1.0F;
-        Matrix4x4 m = new Matrix4x4();
-        m[0, 0] = x;
-        m[0, 1] = 0;
-        m[0, 2] = a;
-        m[0, 3] = 0;
-        m[1, 0] = 0;
-        m[1, 1] = y;
-        m[1, 2] = b;
-        m[1, 3] = 0;
-        m[2, 0] = 0;
-        m[2, 1] = 0;
-        m[2, 2] = c;
-        m[2, 3] = d;
-        m[3, 0] = 0;
-        m[3, 1] = 0;
-        m[3, 2] = e;
-        m[3, 3] = 0;
-        return m;
+        float u = Random.Range(0f, 1f);
+        float v = Random.Range(0f, 1f);
+
+        float theta = 2f * Mathf.PI * u;
+        float phi = Mathf.Acos(2f * v - 1);
+
+        Vector3 vec;
+        vec.x = radius * Mathf.Sin(phi) * Mathf.Cos(theta);
+        vec.y = radius * Mathf.Sin(phi) * Mathf.Sin(theta);
+        vec.z = radius * Mathf.Cos(phi);
+
+        return vec;
     }
+
     IEnumerator moveToCam()
     {
         for (i = 0; i < 100; i++)
         {
             float temp = Time.time * 100f;
 
-            Random.InitState((int)temp);
-            float randX = Random.Range(0f, 360f);
-            float randY = Random.Range(0f, 180f);
-            float randZ = Random.Range(0f, 360f);
-            float x = Cude.position.x + 3 * Mathf.Cos(randX * Mathf.PI / 180);
-            float y = Cude.position.y + 3 * Mathf.Sin(randY * Mathf.PI / 180);
-            float z = Cude.position.z + 3 * Mathf.Sin(randZ * Mathf.PI / 180);
-            Vector3 dir = new Vector3(Cude.transform.position.x - x, Cude.transform.position.y - y, Cude.transform.position.z - z);
+            Vector3 pos = RandomPointOnSphere();
+            Vector3 dir = new Vector3(Cude.transform.position.x - pos.x, Cude.transform.position.y - pos.y, Cude.transform.position.z - pos.z);
             _camera.transform.rotation = Quaternion.LookRotation(dir);
-            _camera.transform.position = new Vector3(x, y, z);
+            _camera.transform.position = pos;
             Capture();
             yield return new WaitForSeconds(0.3f);
         }
@@ -135,15 +109,6 @@ public class detect : MonoBehaviour
         camera.backgroundColor = preBackgroundColor;
         camera.clearFlags = preClearFlags;
         return capture;
-    }
-    private void fibonacci_Sampling(int n_pts,float radius)
-    {
-        Assert.IsTrue(n_pts % 2 == 1);
-        int n_pts_half = n_pts / 2;
-        float phi = (Mathf.Sqrt(5.0f) + 1.0f) / 2.0f;
-        float phi_inv = phi - 1.0f;
-        float ga = 2.0f * Mathf.PI * phi_inv;
-
     }
     private Color GetColor(Color black, Color white)
     {

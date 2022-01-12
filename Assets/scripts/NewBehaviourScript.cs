@@ -12,10 +12,10 @@ public class NewBehaviourScript : MonoBehaviour
     }
     Matrix4x4 getCameraInstinct()
     {
-        float fx = -targetCamera.focalLength / targetCamera.sensorSize.x * targetCamera.pixelWidth;
+        float fx = targetCamera.focalLength / targetCamera.sensorSize.x * targetCamera.pixelWidth;
         Debug.Log(targetCamera.sensorSize.x );
         Debug.Log(targetCamera.pixelWidth);
-        float fy = -targetCamera.focalLength / targetCamera.sensorSize.y * targetCamera.pixelHeight;
+        float fy = targetCamera.focalLength / targetCamera.sensorSize.y * targetCamera.pixelHeight;
         Debug.Log(targetCamera.sensorSize.y);
         Debug.Log(targetCamera.pixelHeight);
         float cx = targetCamera.pixelWidth / 2f;
